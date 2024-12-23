@@ -297,7 +297,7 @@ void task4QueensBattle() {
     int areaTrack[ASCII]={0};
     printf("Please enter the board dimensions:\n");
     scanf("%d", &dimension);
-    printf("Please enter the %d*%d puzzle board\n",dimension , dimension);
+    printf("Please enter a %d*%d puzzle board\n",dimension , dimension);
     // take the user input
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++)
