@@ -39,6 +39,7 @@ void task3ParenthesisValidator();
 int findOpener();
 int findCloser (char opener);
 char specificCloser (char opener);
+int cleanBuffer ();
 void task4QueensBattle();
 int queen(int y, int x, int d, int rowTrack[BOARD_SIZE], int columnTrack[BOARD_SIZE], int areaTrack[ASCII], \
           char givenBoard[BOARD_SIZE][BOARD_SIZE], char printBoard[BOARD_SIZE][BOARD_SIZE]);
@@ -224,10 +225,10 @@ int findOpener() {
     }
     // If we found an opener parentheses - we call a func that looking for it closer
     if (item == '[' || item == '(' || item == '{' || item == '<'){
-        // delete!printf("found opener %c start looking for closer\n", item);
+        // delete! printf("found opener %c start looking for closer\n", item);
         // if the openers will complete - move on to find new one
         if(findCloser(item)) {
-            // delete!printf("retun from find closer - start looking for new opener\n");
+            // delete! printf("retun from find closer - start looking for new opener\n");
             return findOpener();
         }
         // if the opener didnt close or get to not balanced situation - 0
@@ -235,7 +236,7 @@ int findOpener() {
             return 0;
     }
     // continue to check if not all above
-    findOpener();
+    return findOpener();
     }
 // func that find the closer - take the opener with it
 int findCloser (char opener) {
@@ -244,24 +245,24 @@ int findCloser (char opener) {
     scanf("%c", &item);
     // if the item match to it closer - continue to check
     if (item == specificCloser(opener)) {
-        // delete!printf("found closer %c\n", item);
+        // delete! printf("found closer %c\n", item);
         return 1;
     }
     // else if the item is closer that we didn't look for - not ballanced
     else if (item == ')' || item == ']' || item == '}' || item == '>') {
-        // delete!printf("found opener %c while checking for closer\n", item);
+        // delete! printf("found opener %c while checking for closer\n", item);
         scanf("%*[^\n]");
         return 0;
     }
     // if we get to the end while looking for a closer - not balanced
     if (item == '\n') {
-        // delete!printf("got to the end with not closed parenth\n", item);
+        // delete! printf("got to the end with not closed parenth\n", item);
         return 0;
     }
     // if it finds new opener while looking for closer - start looking for closer to the new one
     if (item == '(' || item == '[' || item == '{' || item == '<') {
         // if the find closer to the new parenth will be not ballanced - 0 (incomplete)
-       // delete! printf("found new opener %c start looking for closer\n", item);
+        // delete! printf("found new opener %c start looking for closer\n", item);
         if (!findCloser(item))
             return 0;
     }
@@ -279,8 +280,17 @@ char specificCloser (char opener) {
         return '}';
     if (opener == '<')
         return '>';
+    return '\0';
 }
+int cleanBuffer () {
+    char item;
+    scanf("%c", &item);
+    if (item == '\n')
+        return 0;
+    else
+        cleanBuffer();
 
+}
 void task4QueensBattle() {
     // dimension
     int dimension;
@@ -324,7 +334,7 @@ void task4QueensBattle() {
 // the func that try to solve the board
 int queen(int y, int x, int dimension, int rowTrack[BOARD_SIZE], int columnTrack[BOARD_SIZE], int areaTrack[ASCII], \
           char givenBoard[BOARD_SIZE][BOARD_SIZE], char printBoard[BOARD_SIZE][BOARD_SIZE]) {
-    // Succes (stop condition)
+    // Success (stop condition)
     if (y==dimension && columnTrack[y-1]==1)
         return 1;
     // the program tried all combination with no success (exceed out of the dimension) - fail
@@ -342,11 +352,12 @@ int queen(int y, int x, int dimension, int rowTrack[BOARD_SIZE], int columnTrack
     // if cant put queen in the location - move to the nearby location
     else
         return (queen(y, x+1, dimension, rowTrack, columnTrack, areaTrack, givenBoard, printBoard));
+    return 1;
 }
 // func that check if it can take queen
 int check (int y, int x, int rowTrack[BOARD_SIZE], int columnTrack[BOARD_SIZE], int areaTrack[ASCII], \
           char givenBoard[BOARD_SIZE][BOARD_SIZE], char printBoard[BOARD_SIZE][BOARD_SIZE] ) {
-    char currentAre = givenBoard[y][x];
+    int currentAre = givenBoard[y][x];
     /*
      check what is inside the accord location in the trackers and check the nearby diagonals
      1 - clear
@@ -378,7 +389,7 @@ void mark (int y, int x, int rowTrack[BOARD_SIZE], int columnTrack[BOARD_SIZE], 
     rowTrack[y] = 1;
     // update columns
     columnTrack[x] = 1;
-    char currentArea = givenBoard[y][x];
+    int currentArea = givenBoard[y][x];
     // update area (locatin is the numeral value in ASCII)
     areaTrack[currentArea] = 1;
 }
@@ -389,7 +400,7 @@ void unmark (int y, int x, int rowTrack[BOARD_SIZE], int columnTrack[BOARD_SIZE]
     rowTrack[y] = 0;
     // update columns
     columnTrack[x] = 0;
-    char currentArea = givenBoard[y][x];
+    int currentArea = givenBoard[y][x];
     // update the area
     areaTrack[currentArea] = 0;
     // change the queen to '*'
@@ -464,17 +475,17 @@ int singWordToSlot (int slotIndex, Slot slotArray[SLOTS_MAX], int wordIndex, Wor
 
 int validPlace (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]) {
 
-    // delete!printf("check for %s\n", word.letters);
+    // delete! printf("check for %s\n", word.letters);
     if (slot.length != word.length) {
-        // delete!printf("Wrong word length.\n");
+        // delete! printf("Wrong word length.\n");
         return 0;
     }
     if (word.occupation) {
-        // delete!printf("Used word\n");
+        // delete! printf("Used word\n");
         return 0;
     }
     if (!checkPreviuseInsert(slot, word, crosswordBoard)) {
-       // delete! printf("Dont much the other previude words\n");
+        // delete! printf("Dont much the other previude words\n");
         return 0;
     }
     return 1;
@@ -488,19 +499,19 @@ int checkPreviuseInsert (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX
 }
 
 int checkH (Slot slot, Word word, int counter, int row, int colmn, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]) {
-    // delete!printf("Checking for words in the horizion: %s\n", word.letters);
+    // delete! printf("Checking for words in the horizion: %s\n", word.letters);
     if (counter == word.length)
         return 1;
     if (crosswordBoard[row][colmn] == '\0')
         return checkH(slot, word, counter + 1, row, colmn + 1, crosswordBoard);
     if (word.letters[counter] != crosswordBoard[row][colmn])
-        // delete!printf("Wrong much %c in (%d,%d)\n", crosswordBoard[row][colmn], row, colmn);
+        // delete! printf("Wrong much %c in (%d,%d)\n", crosswordBoard[row][colmn], row, colmn);
         return 0;
     return checkH(slot, word, counter + 1, row, colmn + 1, crosswordBoard);
 }
 
 int checkV (Slot slot, Word word, int counter, int row, int colmn, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]) {
-    // delete!printf("Checking for words in the vertical: %s\n", word.letters);
+    // delete! printf("Checking for words in the vertical: %s\n", word.letters);
     if (counter == word.length)
         return 1;
     if (crosswordBoard[row][colmn] == '\0')
@@ -512,7 +523,7 @@ int checkV (Slot slot, Word word, int counter, int row, int colmn, char crosswor
 
 void insert (int slotIndex, Slot slotArray[SLOTS_MAX], int wordIndex, Word wordArray[SLOTS_MAX],\
     char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX], int counter) {
-    // delete!printf("insert %s\n", wordArray[wordIndex].letters);
+    // delete! printf("insert %s\n", wordArray[wordIndex].letters);
     if (slotArray[slotIndex].direction == 'H')
         insertH(slotArray[slotIndex], wordArray[wordIndex], crosswordBoard,\
             slotArray[slotIndex].row, slotArray[slotIndex].colmn, counter);
@@ -543,7 +554,7 @@ void insertV (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD
 
 void removeInsert (int slotIndex, Slot slotArray[SLOTS_MAX], int wordIndex, Word wordArray[SLOTS_MAX],\
     char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX], int counter) {
-    // delete!printf("remove %s length: %d\n", wordArray[wordIndex].letters, wordArray[wordIndex].length);
+    // delete! printf("remove %s length: %d\n", wordArray[wordIndex].letters, wordArray[wordIndex].length);
     if (slotArray[slotIndex].direction == 'H')
         removeH(slotArray[slotIndex], wordArray[wordIndex], crosswordBoard,\
             slotArray[slotIndex].row, slotArray[slotIndex].colmn, counter);
