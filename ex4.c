@@ -66,7 +66,7 @@ void insertH (Slot slot, Word word,  char crosswordBoard[CROSSWORD_MAX][CROSSWOR
     int row, int colmn, int counter);
 void insertV (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX],\
     int row, int colmn, int counter);
-int checkPreviuseInsert (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX], int counter);
+int checkPreviuseInsert (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]);
 int checkH (Slot slot, Word word, int counter, int row, int colmn, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]);
 int checkV (Slot slot, Word word, int counter, int row, int colmn, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]);
 int validPlace (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]);
@@ -473,14 +473,14 @@ int validPlace (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWO
         // delete!printf("Used word\n");
         return 0;
     }
-    if (!checkPreviuseInsert(slot, word, crosswordBoard, 0)) {
+    if (!checkPreviuseInsert(slot, word, crosswordBoard)) {
        // delete! printf("Dont much the other previude words\n");
         return 0;
     }
     return 1;
 }
 
-int checkPreviuseInsert (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX], int counter) {
+int checkPreviuseInsert (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]) {
     if (slot.direction == 'H')
         return checkH(slot, word, 0, slot.row, slot.colmn, crosswordBoard);
     else
