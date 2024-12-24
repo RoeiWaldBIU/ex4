@@ -12,7 +12,7 @@ Assignment: ex4
 #define BOARD_SIZE 20
 #define BOARD_LIMIT 3
 #define ASCII 128
-#define WORD_MAX 15
+#define WORD_MAX 16
 #define CROSSWORD_MAX 30
 #define SLOTS_MAX 100
 
@@ -39,7 +39,7 @@ void task3ParenthesisValidator();
 int findOpener();
 int findCloser (char opener);
 char specificCloser (char opener);
-int cleanBuffer ();
+
 void task4QueensBattle();
 int queen(int y, int x, int d, int rowTrack[BOARD_SIZE], int columnTrack[BOARD_SIZE], int areaTrack[ASCII], \
           char givenBoard[BOARD_SIZE][BOARD_SIZE], char printBoard[BOARD_SIZE][BOARD_SIZE]);
@@ -283,15 +283,7 @@ char specificCloser (char opener) {
         return '>';
     return '\0';
 }
-int cleanBuffer () {
-    char item;
-    scanf("%c", &item);
-    if (item == '\n')
-        return 0;
-    else
-        cleanBuffer();
 
-}
 void task4QueensBattle() {
     // dimension
     int dimension;
