@@ -188,7 +188,7 @@ float computeWeight(float weightArr[PYRAMID_SIZE][PYRAMID_SIZE], int y, int x) {
     if (y<0 || x<0 || y<x)
         return 0;
     /*
-    Sum the weight of the cheerleader and the half of the total weight of the two cheerleaders above her.
+    Sum the half of the total weight of the two cheerleaders above her and then add the weight of the cheerleader
     the two above in the array is the one above and the one above and to the left
     */
     float above = HALF * (computeWeight(weightArr, y-1, x) + computeWeight(weightArr, y-1, x-1));
@@ -218,7 +218,7 @@ int findOpener() {
     // If it is a closer parentheses - not balanced
     if (item == ')' || item == ']' || item == '}' || item == '>') {
         // delete! printf("found closer while looking for opener\n");
-        scanf("%*[^\n]");
+        scanf("%*[^ \n]");
         return 0;
     }
     // If we get till the end - correct
@@ -253,7 +253,7 @@ int findCloser (char opener) {
     // else if the item is closer that we didn't look for - not ballanced
     else if (item == ')' || item == ']' || item == '}' || item == '>') {
         // delete! printf("found opener %c while checking for closer\n", item);
-        scanf("%*[^\n]");
+        scanf("%*[^ \n]");
         return 0;
     }
     // if we get to the end while looking for a closer - not balanced
@@ -402,37 +402,46 @@ void unmark (int y, int x, int rowTrack[BOARD_SIZE], int columnTrack[BOARD_SIZE]
     printBoard[y][x] = '*';
 }
 
-
+// Func that do case 5
 void task5CrosswordGenerator() {
+    // initialize the crossword board that I will print ro '\0'
     char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX] = {0};
+    // variable of the dimension of the board
     int dimension;
-
     printf("Please enter the dimensions of the crossword grid:\n");
     scanf("%d", &dimension);
+    // the number of the slots
     int slotsNum;
     printf("Please enter the number of slots in the crossword:\n");
     scanf("%d", &slotsNum);
+    // define an array of the struct of the slots
     Slot slotArray[SLOTS_MAX];
     printf("Please enter the details for each slot (Row, Column, Length, Direction):\n");
+    // take the slots details to the array
     for (int i = 0; i < slotsNum; i++) {
         scanf("%d %d %d %c",\
             &slotArray[i].row, &slotArray[i].colmn, &slotArray[i].length, &slotArray[i].direction);
         slotArray[i].occupation = -1;
     }
+    // the number of the words
     int wordsNum;
     printf("Please enter the number of words in the dictionary:\n");
     scanf("%d", &wordsNum);
+    // if the number of the word is less than the number of the slot
     while (wordsNum < slotsNum) {
         printf("The dictionary must contain at least %d words. Please enter a valid dictionary size:\n", slotsNum);
         scanf("%d", &wordsNum);
     }
+    // define an array of the words struct
     Word wordArray[SLOTS_MAX];
     printf("Please enter the words for the dictionary:\n");
+    // take the words details to the array
     for (int i = 0; i < wordsNum; i++) {
         scanf("%s", wordArray[i].letters);
         wordArray[i].length = strlen(wordArray[i].letters);
         wordArray[i].occupation = 0;
     }
+    // if the crossword is excutable - print it
     if (singWordToSlot(0, slotArray, 0, wordArray, crosswordBoard, slotsNum, wordsNum)) {
         for (int i = 0; i < dimension; i++) {
             printf("| ");
@@ -446,144 +455,173 @@ void task5CrosswordGenerator() {
             printf("\n");
         }
     }
+    // if the crossword is not excutable
     else
         printf("This crossword cannot be solved.\n");
 }
-
+// the func that check the crossword
 int singWordToSlot (int slotIndex, Slot slotArray[SLOTS_MAX], int wordIndex, Word wordArray[SLOTS_MAX],\
     char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX], int slotNum, int wordNum) {
+    // if we entered to all slots - success
     if (slotIndex == slotNum)
         return 1;
-
+    // if we used more than all the words - fail
     if (wordIndex == wordNum)
         return 0;
-
+    // check if the slot is valid to take the word - insert
     if (validPlace(slotArray[slotIndex], wordArray[wordIndex], crosswordBoard)) {
         insert(slotIndex, slotArray, wordIndex, wordArray, crosswordBoard, 0);
+        // move to the next slot - if all good - success
         if (singWordToSlot(slotIndex+1, slotArray, 0, wordArray, crosswordBoard, slotNum, wordNum))
             return 1;
+        // if not all the next moves are good, remove the word from the slot, reinsert the previuse words that overlap
         removeInsert(slotIndex, slotArray, wordIndex, wordArray, crosswordBoard, 0);
         reInsert(slotIndex, slotArray, wordIndex, wordArray, crosswordBoard, slotNum, 0);
     }
+    // if the word dont much - try the next word
     return singWordToSlot(slotIndex, slotArray, wordIndex + 1, wordArray, crosswordBoard, slotNum, wordNum);
 }
-
+// func that check if the word is fit to the slot
 int validPlace (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]) {
-
-    // delete! printf("check for %s\n", word.letters);
+    // if the length are diffrent - fail
     if (slot.length != word.length) {
-        // delete! printf("Wrong word length.\n");
         return 0;
     }
+    // if the word is allredy used
     if (word.occupation) {
-        // delete! printf("Used word\n");
         return 0;
     }
+    // if the word doesnt fit with the previuse words - fail
     if (!checkPreviuseInsert(slot, word, crosswordBoard)) {
-        // delete! printf("Dont much the other previude words\n");
         return 0;
     }
     return 1;
 }
-
+// func that check if the word fits the other overlap words
 int checkPreviuseInsert (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]) {
+    // if it horizantal slot - check the horizel
     if (slot.direction == 'H')
         return checkH(slot, word, 0, slot.row, slot.colmn, crosswordBoard);
+    // if it vertical check the vertical way
     else
         return checkV(slot, word, 0, slot.row, slot.colmn, crosswordBoard);
 }
-
+//func that check the horizen
 int checkH (Slot slot, Word word, int counter, int row, int colmn, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]) {
-    // delete! printf("Checking for words in the horizion: %s\n", word.letters);
+    // if we checked the whole word - success
     if (counter == word.length)
         return 1;
+    // if the position is '\0' check the next position
     if (crosswordBoard[row][colmn] == '\0')
         return checkH(slot, word, counter + 1, row, colmn + 1, crosswordBoard);
+    // if the overlap position isnt fit - fail
     if (word.letters[counter] != crosswordBoard[row][colmn])
-        // delete! printf("Wrong much %c in (%d,%d)\n", crosswordBoard[row][colmn], row, colmn);
         return 0;
+    // if none above  - check the next position
     return checkH(slot, word, counter + 1, row, colmn + 1, crosswordBoard);
 }
-
+//func that check the vertical
 int checkV (Slot slot, Word word, int counter, int row, int colmn, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX]) {
-    // delete! printf("Checking for words in the vertical: %s\n", word.letters);
+    // if we checked the whole word - success
     if (counter == word.length)
         return 1;
+    // if the position is '\0' check the next position
     if (crosswordBoard[row][colmn] == '\0')
         return checkV(slot, word, counter + 1, row + 1, colmn, crosswordBoard);
+    // if the overlap position isnt fit - fail
     if (word.letters[counter] != crosswordBoard[row][colmn])
         return 0;
+    // if none above  - check the next position
     return checkV(slot, word, counter + 1, row + 1, colmn, crosswordBoard);
 }
-
+// func that insert the word to the slot
 void insert (int slotIndex, Slot slotArray[SLOTS_MAX], int wordIndex, Word wordArray[SLOTS_MAX],\
     char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX], int counter) {
-    // delete! printf("insert %s\n", wordArray[wordIndex].letters);
+// if horizental slot - insert horizan, else vertical
     if (slotArray[slotIndex].direction == 'H')
         insertH(slotArray[slotIndex], wordArray[wordIndex], crosswordBoard,\
             slotArray[slotIndex].row, slotArray[slotIndex].colmn, counter);
     else
         insertV(slotArray[slotIndex], wordArray[wordIndex], crosswordBoard,\
             slotArray[slotIndex].row, slotArray[slotIndex].colmn, counter);
+    // mark word as occupide
     wordArray[wordIndex].occupation = 1;
+    // mark the slot with the word index
     slotArray[slotIndex].occupation = wordIndex;
 }
-
+// func that insert horizental
 void insertH (Slot slot, Word word,  char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX],\
     int row, int colmn, int counter) {
+    // do untill finish the word
     if (counter == word.length) {
         return;
     }
+    // fill the position with the letter
     crosswordBoard[row][colmn] = word.letters[counter];
+    // move to the next letter
     insertH(slot, word, crosswordBoard, row, colmn + 1, counter + 1);
 }
-
+// func that insert vertical
 void insertV (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX],\
     int row, int colmn, int counter) {
+    // do untill finish the word
     if (counter == word.length) {
         return;
     }
+    // fill the position with the letter
     crosswordBoard[row][colmn] = word.letters[counter];
+    // move to the next letter
     insertV(slot, word, crosswordBoard, row + 1, colmn, counter + 1);
 }
-
+// func that remove the insert - active when all the next words didnt fit
 void removeInsert (int slotIndex, Slot slotArray[SLOTS_MAX], int wordIndex, Word wordArray[SLOTS_MAX],\
     char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX], int counter) {
-    // delete! printf("remove %s length: %d\n", wordArray[wordIndex].letters, wordArray[wordIndex].length);
+    // horizental
     if (slotArray[slotIndex].direction == 'H')
         removeH(slotArray[slotIndex], wordArray[wordIndex], crosswordBoard,\
             slotArray[slotIndex].row, slotArray[slotIndex].colmn, counter);
+    // vertical
     else
         removeV(slotArray[slotIndex], wordArray[wordIndex], crosswordBoard,\
             slotArray[slotIndex].row, slotArray[slotIndex].colmn, counter);
+    // unmark as occupide
     wordArray[wordIndex].occupation = 0;
     slotArray[slotIndex].occupation = -1;
 }
-
+// remove the horizan
 void removeH (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX],\
     int row, int colmn, int counter) {
+    // stop when do the whole word
     if (counter == word.length) {
         return;
     }
+    // mark the position as '\0'
     crosswordBoard[row][colmn] = '\0';
+    // move to the next position
     removeH(slot, word, crosswordBoard, row, colmn + 1, counter + 1);
 }
-
+// remove the vertical
 void removeV (Slot slot, Word word, char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX],\
     int row, int colmn, int counter) {
+    // stop when do the whole word
     if (counter == word.length) {
         return;
     }
+    // mark the position as '\0'
     crosswordBoard[row][colmn] = '\0';
+    // move to the next position
     removeH(slot, word, crosswordBoard, row + 1, colmn, counter + 1);
 }
-
+// func that reinsert the prviuse word that maybe the overlap was deleted in the remove func
 void reInsert (int slotIndex, Slot slotArray[SLOTS_MAX], int wordIndex, Word wordArray[SLOTS_MAX],\
     char crosswordBoard[CROSSWORD_MAX][CROSSWORD_MAX], int slotsNum, int counter) {
+    // stop when we reinsert all the words in the slots
     if (counter == slotIndex)
         return;
-    if (slotArray[counter].occupation >= 0)
+    // if there is a word in this slot - insert it again
+    if (slotArray[counter].occupation > -1)
         insert(counter, slotArray, slotArray[counter].occupation, wordArray, crosswordBoard, 0);
+    // move to the next slot
     reInsert(slotIndex, slotArray, wordIndex, wordArray, crosswordBoard, slotsNum, counter + 1);
 }
 
