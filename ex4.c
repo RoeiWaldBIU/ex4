@@ -170,6 +170,7 @@ void task2HumanPyramid() {
 }
 // Func that will print the total weight supported by each cheerleader in the pyramid.
 void printTotalWeights (float weightArr[PYRAMID_SIZE][PYRAMID_SIZE]) {
+    printf("The total weight on each cheerleader is:\n");
     /* loop that run as the pyramid and print the cumulative weight of the cheerleader.
        1 print to the first line
        2 prints to the second and so on */
@@ -297,9 +298,9 @@ void task4QueensBattle() {
     int columnTrack[BOARD_SIZE]={0};
     // An array that will track if there is queen in the area (by adding 1 to the location that is the number in ASCII
     int areaTrack[ASCII]={0};
-    printf("Please enter the dimensions of the board:\n");
+    printf("Please enter the board dimensions:\n");
     scanf("%d", &dimension);
-    printf("Please enter the %d*%d puzzle board\n",dimension , dimension);
+    printf("Please enter a %d*%d puzzle board\n",dimension , dimension);
     // take the user input
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++)
@@ -309,6 +310,7 @@ void task4QueensBattle() {
         printf("This puzzle cannot be solved.\n");
     //if the func queen that solve the board succeed it will print the board that was modify with queens
     else if (queen(0,0,dimension, rowTrack, columnTrack, areaTrack, givenBoard, printBoard)) {
+        printf("Solution:\n");
         for (int i=0; i<dimension;i++){
             for (int j=0; j<dimension;j++){
                 // if it has queen in the location
