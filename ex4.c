@@ -197,8 +197,8 @@ float computeWeight(float weightArr[PYRAMID_SIZE][PYRAMID_SIZE], int y, int x) {
 void task3ParenthesisValidator()
 {
     // Clean the buffer
-    // delete! scanf("%*[^\n]");
-    // delete! scanf("%*c");
+    scanf("%*[^ \n]");
+    
     printf("Please enter a term for validation:\n");
     // If the helper func that check the validaition is return correct - success
     if (findOpener())
@@ -216,7 +216,7 @@ int findOpener() {
     // If it is a closer parentheses - not balanced
     if (item == ')' || item == ']' || item == '}' || item == '>') {
         // delete! printf("found closer while looking for opener\n");
-        scanf("%*[^\n]");
+        scanf("%*[^ \n]");
         return 0;
     }
     // If we get till the end - correct
