@@ -39,6 +39,7 @@ void task3ParenthesisValidator();
 int findOpener();
 int findCloser (char opener);
 char specificCloser (char opener);
+int cleanBuffer ();
 void task4QueensBattle();
 int queen(int y, int x, int d, int rowTrack[BOARD_SIZE], int columnTrack[BOARD_SIZE], int areaTrack[ASCII], \
           char givenBoard[BOARD_SIZE][BOARD_SIZE], char printBoard[BOARD_SIZE][BOARD_SIZE]);
@@ -169,7 +170,6 @@ void task2HumanPyramid() {
 }
 // Func that will print the total weight supported by each cheerleader in the pyramid.
 void printTotalWeights (float weightArr[PYRAMID_SIZE][PYRAMID_SIZE]) {
-    printf("The total weight on each cheerleader is:\n");
     /* loop that run as the pyramid and print the cumulative weight of the cheerleader.
        1 print to the first line
        2 prints to the second and so on */
@@ -198,7 +198,7 @@ void task3ParenthesisValidator()
 {
     // Clean the buffer
     scanf("%*[^ \n]");
-    
+    scanf("%*c");
     printf("Please enter a term for validation:\n");
     // If the helper func that check the validaition is return correct - success
     if (findOpener())
@@ -207,6 +207,7 @@ void task3ParenthesisValidator()
     else
         printf("The parentheses are not balanced correctly.\n");
     // clean the buffer before moving to the next case
+
 }
 // Func that looking for opener parentheses. and check if the input is correct
 int findOpener() {
@@ -216,7 +217,7 @@ int findOpener() {
     // If it is a closer parentheses - not balanced
     if (item == ')' || item == ']' || item == '}' || item == '>') {
         // delete! printf("found closer while looking for opener\n");
-        scanf("%*[^ \n]");
+        scanf("%*[^\n]");
         return 0;
     }
     // If we get till the end - correct
@@ -282,6 +283,15 @@ char specificCloser (char opener) {
         return '>';
     return '\0';
 }
+int cleanBuffer () {
+    char item;
+    scanf("%c", &item);
+    if (item == '\n')
+        return 0;
+    else
+        cleanBuffer();
+
+}
 void task4QueensBattle() {
     // dimension
     int dimension;
@@ -295,9 +305,9 @@ void task4QueensBattle() {
     int columnTrack[BOARD_SIZE]={0};
     // An array that will track if there is queen in the area (by adding 1 to the location that is the number in ASCII
     int areaTrack[ASCII]={0};
-    printf("Please enter the board dimensions:\n");
+    printf("Please enter the dimensions of the board:\n");
     scanf("%d", &dimension);
-    printf("Please enter a %d*%d puzzle board:\n",dimension , dimension);
+    printf("Please enter the %d*%d puzzle board\n",dimension , dimension);
     // take the user input
     for (int i = 0; i < dimension; i++) {
         for (int j = 0; j < dimension; j++)
@@ -307,7 +317,6 @@ void task4QueensBattle() {
         printf("This puzzle cannot be solved.\n");
     //if the func queen that solve the board succeed it will print the board that was modify with queens
     else if (queen(0,0,dimension, rowTrack, columnTrack, areaTrack, givenBoard, printBoard)) {
-        printf("Solution:\n");
         for (int i=0; i<dimension;i++){
             for (int j=0; j<dimension;j++){
                 // if it has queen in the location
